@@ -3,10 +3,13 @@ package com.cvtv.app;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.EmailValidator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -26,36 +29,46 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @Route
+@PageTitle( "CVTV :: app" )
 public class MainView extends VerticalLayout
 {
 	private static final long					serialVersionUID	= -8783462098490997667L;
 	private final Logger						logger				= LoggerFactory.getLogger( getClass() );
 	private final List< Person >				data				= new ArrayList<>();
-	private final VerticalLayout				gridVerticalLayout	= new VerticalLayout();
-	private final Grid< Person >				grid				= new Grid<>( Person.class );
+	private final VerticalLayout				gridLayout			= new VerticalLayout();
 	private final MemoryBuffer					fileBuffer			= new MemoryBuffer();
 	public static final Map< Integer, String >	headerRowMap		= new HashMap<>();
 	private final TextArea						textArea			= new TextArea();
-	private final TextField						emailText			= new TextField( "E-mail", "E-mail" );
-	private final TextField						nomeText			= new TextField( "Nome", "Nome" );
+	private final TextField						emailText			= new TextField( "Coluna com E-mail", "E-mail" );
+	private final TextField						nomeText			= new TextField( "Coluna com o Nome", "Nome" );
+	private final Set< Person >					selectedItems		= new HashSet<>();
 
 	public MainView( @Autowired MessageBean bean )
 	{
-		final Button button = new Button( "Click me", e -> showEmailsWindow() );
-		button.setSizeFull();
+		final Button button = new Button( "Mailing list", e -> showEmailsWindow() );
+		button.setWidth( "100%" );
 
 		final Upload upload = new Upload( fileBuffer );
 		upload.setMaxFiles( 1 );
+		upload.setWidth( "100%" );
 
-		gridVerticalLayout.setSizeFull();
 		textArea.setSizeFull();
+		textArea.setEnabled( false );
+		textArea.getStyle().set( "overflow", "auto" );
+
 		emailText.setValue( "E-mail" );
 		emailText.setWidth( "100%" );
 		nomeText.setValue( "Nome" );
 		nomeText.setWidth( "100%" );
+
+		gridLayout.setSizeFull();
+
 		upload.addSucceededListener( event ->
 		{
 			logger.info( "Succeded: " + fileBuffer.getFileData().getFileName() );
@@ -63,7 +76,7 @@ public class MainView extends VerticalLayout
 		} );
 
 		setAlignItems( Alignment.CENTER );
-		add( upload, grid, button );
+		add( upload, gridLayout, button );
 	}
 
 	private Object showEmailsWindow()
@@ -73,10 +86,10 @@ public class MainView extends VerticalLayout
 		final VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setMargin( false );
 		verticalLayout.setSizeFull();
-		final ValueChangeListener< ValueChangeEvent< ? > > changeListener = event -> updateTextArea( grid.getSelectedItems() );
+		final ValueChangeListener< ValueChangeEvent< ? > > changeListener = event -> updateTextArea();
 		emailText.addValueChangeListener( changeListener );
 		nomeText.addValueChangeListener( changeListener );
-		updateTextArea( grid.getSelectedItems() );
+		updateTextArea();
 		verticalLayout.add( emailText, nomeText, textArea );
 		dialog.add( verticalLayout );
 		dialog.setWidth( "400px" );
@@ -86,24 +99,30 @@ public class MainView extends VerticalLayout
 		return null;
 	}
 
-	private void updateTextArea( Set< Person > selectedItems )
+	private void updateTextArea()
 	{
 		final StringBuilder sb = new StringBuilder();
+
 		for ( final Person person : selectedItems )
 		{
-			if ( sb.length() > 0 )
+			final String value = ( String ) person.getValue( emailText.getValue() );
+
+			if ( StringUtils.isNotBlank( value ) && EmailValidator.getInstance().isValid( value ) )
 			{
-				sb.append( ", " );
+				if ( sb.length() > 0 )
+				{
+					sb.append( ", " );
+				}
+				// if ( chbWithNames.getValue() )
+				// {
+				sb.append( "\"" );
+				sb.append( person.getValue( nomeText.getValue() ) );
+				sb.append( "\" " );
+				// }
+				sb.append( "<" );
+				sb.append( value );
+				sb.append( ">" );
 			}
-			// if ( chbWithNames.getValue() )
-			// {
-			sb.append( "\"" );
-			sb.append( person.getValue( nomeText.getValue() ) );
-			sb.append( "\" " );
-			// }
-			sb.append( "<" );
-			sb.append( person.getValue( emailText.getValue() ) );
-			sb.append( ">" );
 		}
 
 		textArea.setValue( sb.toString() );
@@ -114,6 +133,19 @@ public class MainView extends VerticalLayout
 	{
 		data.clear();
 		headerRowMap.clear();
+
+		gridLayout.removeAll();
+
+		final Grid< Person > grid = new Grid<>( Person.class );
+		grid.setSelectionMode( SelectionMode.MULTI );
+		grid.setColumnReorderingAllowed( true );
+		grid.setMultiSort( true );
+
+		grid.addSelectionListener( event ->
+		{
+			selectedItems.clear();
+			selectedItems.addAll( event.getAllSelectedItems() );
+		} );
 
 		try ( final Workbook workbook = new XSSFWorkbook( fileBuffer.getInputStream() ) )
 		{
@@ -161,29 +193,31 @@ public class MainView extends VerticalLayout
 							break;
 					}
 				}
-				data.add( person );
+				if ( !person.isBlank() )
+				{
+					data.add( person );
+				}
 			}
-			grid.setSelectionMode( SelectionMode.MULTI );
-			grid.setItems( data );
+
+			final ListDataProvider< Person > fromStream = DataProvider.fromStream( data.stream() );
+			grid.setDataProvider( fromStream.withConfigurableFilter() );
 			if ( !headerRowMap.isEmpty() )
 			{
 
 				headerRowMap.values().forEach( col ->
 				{
 					// grid.removeColumnByKey( col );
-					grid.addColumn( source -> source.getValue( col ) ).setHeader( col );
+					grid.addColumn( source -> source.getValue( col ) ).setResizable( true ).setSortable( true ).setHeader( col );
 				} );
 			}
-			headerRowMap.values().forEach( p -> grid.addColumn( p ) );
-
-			gridVerticalLayout.removeAll();
-			gridVerticalLayout.add( grid );
 
 		}
 		catch ( final Exception e )
 		{
 			logger.error( e.getMessage(), e );
 		}
+
+		gridLayout.add( grid );
 	}
 
 }

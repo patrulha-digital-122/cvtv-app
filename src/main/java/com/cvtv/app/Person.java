@@ -8,6 +8,7 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import org.apache.commons.lang3.StringUtils;
 
 public class Person implements BeanInfo
 {
@@ -35,6 +36,11 @@ public class Person implements BeanInfo
 		return "";
 	}
 
+	public boolean isBlank()
+	{
+		return values.values().stream().allMatch( p -> StringUtils.isBlank( p ) );
+	}
+
 	@Override
 	public BeanDescriptor getBeanDescriptor()
 	{
@@ -57,7 +63,6 @@ public class Person implements BeanInfo
 	@Override
 	public PropertyDescriptor[] getPropertyDescriptors()
 	{
-		System.out.println( "getPropertyDescriptors" );
 		final PropertyDescriptor[] list = new PropertyDescriptor[ MainView.headerRowMap.size() ];
 
 		int iCount = 0;
@@ -69,10 +74,10 @@ public class Person implements BeanInfo
 
 			try
 			{
-				final PropertyDescriptor propertyDescriptor = new PropertyDescriptor( value, getClass(), "getValue", null );
+				new PropertyDescriptor( value, getClass(), "getValue", "setValue" );
 
-				propertyDescriptor.setName( value );
-				propertyDescriptor.setValue( value, value );
+				// propertyDescriptor.setName( value );
+				// propertyDescriptor.setValue( value, value );
 
 				list[ iCount ] = new PropertyDescriptor( value, getClass(), "getValue", null );
 			}
@@ -103,7 +108,7 @@ public class Person implements BeanInfo
 	public BeanInfo[] getAdditionalBeanInfo()
 	{
 		// TODO Auto-generated method stub
-		return null;
+		return new BeanInfo[ 0 ];
 	}
 
 	@Override

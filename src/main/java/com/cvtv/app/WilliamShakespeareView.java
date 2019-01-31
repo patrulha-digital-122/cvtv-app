@@ -62,9 +62,8 @@ public class WilliamShakespeareView extends VerticalLayout
 		image.setHeight( "50%" );
 		image.setWidth( "100%" );
 
-		add( image, textArea, btnCodificar, cbManterAcentos, textAreaCodificado );
+		add( textArea, btnCodificar, cbManterAcentos, textAreaCodificado );
 
-		setFlexGrow( 1, image );
 		setFlexGrow( 4, textArea );
 		setFlexGrow( 1, btnCodificar );
 		setFlexGrow( 1, cbManterAcentos );

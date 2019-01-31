@@ -15,7 +15,7 @@ import com.vaadin.flow.server.PWA;
 @Route( "williamshakespeare" )
 @PageTitle( "Equipa William Shakespeare :: Código" )
 @PWA(	name = "Equipa William Shakespeare",
-		shortName = "Eq Wi. Shakespeare",
+		shortName = "W. Shakespeare",
 		startPath = "williamshakespeare",
 		backgroundColor = "#227aef",
 		themeColor = "#227aef",

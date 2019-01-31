@@ -10,9 +10,21 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.PWA;
 
 @Route( "williamshakespeare" )
 @PageTitle( "Equipa William Shakespeare :: Código" )
+@PWA(	name = "Equipa William Shakespeare",
+		shortName = "Eq Wi. Shakespeare",
+		startPath = "williamshakespeare",
+		backgroundColor = "#227aef",
+		themeColor = "#227aef",
+		offlinePath = "offline-page.html",
+		offlineResources =
+		{ "images/offline-login-banner.jpg" },
+		enableInstallPrompt = true,
+		display = "standalone",
+		description = "Esta app altera texto usando o codigo da Equipa William Shakespeare" )
 public class WilliamShakespeareView extends VerticalLayout
 {
 	private static final long	serialVersionUID	= -8783462098490997667L;

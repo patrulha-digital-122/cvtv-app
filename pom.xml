@@ -54,10 +54,6 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-spring-boot-starter</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-grid-flow</artifactId>
-		</dependency>
 
 		<!-- Spring -->
 		<dependency>
@@ -82,8 +78,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.8.1</version>
-		</dependency>
+			</dependency>
 
 	</dependencies>
 

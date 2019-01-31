@@ -6,6 +6,7 @@ import com.vaadin.external.org.slf4j.Logger;
 import com.vaadin.external.org.slf4j.LoggerFactory;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
@@ -21,7 +22,7 @@ import com.vaadin.flow.server.PWA;
 		themeColor = "#227aef",
 		offlinePath = "offline-page.html",
 		offlineResources =
-		{ "images/offline-login-banner.jpg" },
+		{ "images/offline-login-banner.png" },
 		enableInstallPrompt = true,
 		display = "standalone",
 		description = "Esta app altera texto usando o codigo da Equipa William Shakespeare" )
@@ -57,8 +58,13 @@ public class WilliamShakespeareView extends VerticalLayout
 		textAreaCodificado.setEnabled( false );
 		textAreaCodificado.setSizeFull();
 
-		add( textArea, btnCodificar, cbManterAcentos, textAreaCodificado );
+		final Image image = new Image( "frontend/images/banner.png", "Comunidade 61" );
+		image.setHeight( "50%" );
+		image.setWidth( "100%" );
 
+		add( image, textArea, btnCodificar, cbManterAcentos, textAreaCodificado );
+
+		setFlexGrow( 1, image );
 		setFlexGrow( 4, textArea );
 		setFlexGrow( 1, btnCodificar );
 		setFlexGrow( 1, cbManterAcentos );

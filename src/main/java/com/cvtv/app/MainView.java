@@ -34,7 +34,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@Route
+@Route( "cvtv" )
 @PageTitle( "CVTV :: app" )
 public class MainView extends VerticalLayout
 {

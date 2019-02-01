@@ -1,4 +1,4 @@
-package com.cvtv.app;
+package scouts.cne.pt;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

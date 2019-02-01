@@ -3,9 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.cvtv.app</groupId>
-	<artifactId>cvtv-app</artifactId>
-	<name>CVTV App</name>
+	<groupId>scouts.cne.pt</groupId>
+	<artifactId>gerador-codigos</artifactId>
+	<name>Gerador de Códigos</name>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
@@ -78,7 +78,12 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			</dependency>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
+		</dependency>
 
 	</dependencies>
 
@@ -94,7 +99,8 @@
 				<directory>src/main/resources</directory>
 				<excludes>
 					<exclude>**/*.java</exclude>
-				</excludes>			</resource>
+				</excludes>
+			</resource>
 		</resources>
 		<plugins>
 			<plugin>
@@ -116,7 +122,7 @@
 
 	<profiles>
 		<profile>
-		
+
 			<id>productionMode</id>
 			<activation>
 				<property>

@@ -1,0 +1,44 @@
+@font-face {
+    font-family: 'Angular';
+    src: url('../fonts/angular.ttf');
+}
+
+@font-face {
+    font-family: 'Homografo';
+    src: url('../fonts/homografo.ttf');
+}
+
+@font-face {
+    font-family: 'LGP';
+    src: url('../fonts/LGP.ttf');
+}
+
+@font-face {
+    font-family: 'Morse';
+    src: url('../fonts/morse.ttf');
+}
+
+@font-face {
+    font-family: 'Chines';
+    src: url('../fonts/chines.ttf');
+}
+
+.angular {
+    font-family: 'Angular';
+}
+
+.homografo {
+    font-family: 'Homografo';
+}
+
+.lgp {
+    font-family: 'LGP';
+}
+
+.morse {
+    font-family: 'Morse';
+}
+
+.chines {
+    font-family: 'Chines';
+}

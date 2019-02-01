@@ -1,38 +1,29 @@
-package com.cvtv.app;
+package scouts.cne.pt;
 
+import java.math.BigDecimal;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.vaadin.external.org.slf4j.Logger;
 import com.vaadin.external.org.slf4j.LoggerFactory;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextAreaVariant;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.PWA;
 
-@Route( "williamshakespeare" )
+@Route( value= "williamshakespeare" )
 @PageTitle( "Equipa William Shakespeare :: Código" )
-@PWA(	name = "Equipa William Shakespeare",
-		shortName = "W. Shakespeare",
-		startPath = "williamshakespeare",
-		backgroundColor = "#227aef",
-		themeColor = "#227aef",
-		offlinePath = "offline-page.html",
-		offlineResources =
-		{ "images/offline-login-banner.png" },
-		enableInstallPrompt = true,
-		display = "standalone",
-		description = "Esta app altera texto usando o codigo da Equipa William Shakespeare" )
 public class WilliamShakespeareView extends VerticalLayout
 {
 	private static final long	serialVersionUID	= -8783462098490997667L;
 	private final Logger		logger				= LoggerFactory.getLogger( getClass() );
 	private final TextArea		textArea;
 	private final TextArea		textAreaCodificado;
-	private final Button		btnCodificar;
 	private final Checkbox		cbManterAcentos;
 
 	public WilliamShakespeareView()
@@ -44,29 +35,26 @@ public class WilliamShakespeareView extends VerticalLayout
 		setSizeFull();
 
 		textArea = new TextArea( "Texto a codificar" );
+		textArea.setValueChangeMode( ValueChangeMode.EAGER );
+		textArea.addValueChangeListener( e -> codificarTexto() );
 		textArea.setSizeFull();
-
-		btnCodificar = new Button( "Codificar" );
-		btnCodificar.setWidth( "100%" );
-		btnCodificar.addClickListener( e -> codificarTexto() );
 
 		cbManterAcentos = new Checkbox( "Utilizar acentos" );
 		cbManterAcentos.setValue( false );
 		cbManterAcentos.setWidth( "100%" );
 
-		textAreaCodificado = new TextArea( "Texto codificado" );
+		textAreaCodificado = new TextArea();
+		textAreaCodificado.addThemeVariants( TextAreaVariant.LUMO_ALIGN_CENTER );
+		textAreaCodificado.getStyle().set( "font-size", "1.75rem" );
 		textAreaCodificado.setEnabled( false );
 		textAreaCodificado.setSizeFull();
 
-		final Image image = new Image( "frontend/images/banner.png", "Comunidade 61" );
-		image.setHeight( "50%" );
-		image.setWidth( "100%" );
+		HorizontalLayout optionsLayout = getOptionsLayout();
 
-		add( textArea, btnCodificar, cbManterAcentos, textAreaCodificado );
+		add( textArea, optionsLayout, textAreaCodificado );
 
 		setFlexGrow( 4, textArea );
-		setFlexGrow( 1, btnCodificar );
-		setFlexGrow( 1, cbManterAcentos );
+		setFlexGrow( 1, optionsLayout );
 		setFlexGrow( 4, textAreaCodificado );
 	}
 
@@ -107,5 +95,56 @@ public class WilliamShakespeareView extends VerticalLayout
 		}
 
 		textAreaCodificado.setValue( sb.toString().toLowerCase() );
+	}
+
+	private HorizontalLayout getOptionsLayout() {
+
+		HorizontalLayout horizontalLayout = new HorizontalLayout();
+		horizontalLayout.setSpacing( true );
+		horizontalLayout.setMargin( false );
+		horizontalLayout.setPadding( true );
+		horizontalLayout.setWidth( "100%" );
+		
+		horizontalLayout.setAlignItems( Alignment.CENTER );
+		horizontalLayout.setJustifyContentMode( JustifyContentMode.CENTER );
+
+		Button btnCodificar = new Button( "Codificar", VaadinIcon.CODE.create() );
+		btnCodificar.addClickListener( e -> codificarTexto() );
+		btnCodificar.setSizeFull();
+		
+		Button btnIncreaseText = new Button( "Texto", VaadinIcon.PLUS.create() );
+		btnIncreaseText.addClickListener( e -> textAreaCodificado.getStyle().set( "font-size", processTextSize( true ) ) );
+		btnIncreaseText.setSizeFull();
+		Button btnDecreaseText = new Button( "Texto", VaadinIcon.MINUS.create() );
+		btnDecreaseText.addClickListener( e -> textAreaCodificado.getStyle().set( "font-size", processTextSize( false ) ) );
+		btnDecreaseText.setSizeFull();
+		
+		horizontalLayout.add( cbManterAcentos, btnCodificar, btnIncreaseText, btnDecreaseText );
+		
+		return horizontalLayout;
+	}
+
+	private String processTextSize( boolean bEncrease )
+	{
+		String strOriginalSize = textAreaCodificado.getStyle().get( "font-size" );
+		if ( StringUtils.isBlank( strOriginalSize ) )
+		{
+			return "1.75rem";
+		}
+
+		strOriginalSize = strOriginalSize.replace( "rem", "" );
+
+		BigDecimal bigDecimal = new BigDecimal( strOriginalSize );
+		BigDecimal valueToChange = BigDecimal.valueOf( 0.25 );
+
+		if ( bEncrease )
+		{
+			bigDecimal = bigDecimal.add( valueToChange );
+		}
+		else
+		{
+			bigDecimal = bigDecimal.subtract( valueToChange );
+		}
+		return bigDecimal.toString() + "rem";
 	}
 }
